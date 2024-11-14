@@ -1,86 +1,101 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+#include<stdio.h>
+int no_vertices;
+void printGraph(int adj[][no_vertices])
+{
+	for(int i=0;i<no_vertices;i++)
+	{
+		for(int j =0;j<no_vertices;j++)
+		{
+			printf(" %d  ",adj[i][j]);
+		}
+		printf("\n");
+	}
 
-#define MAX_VERTICES 100 // Maximum number of vertices
-
-// Function to perform BFS traversal
-void BFS(int graph[MAX_VERTICES][MAX_VERTICES], int vertices, int start) {
-    // Array to keep track of visited vertices
-    bool visited[MAX_VERTICES] = {false};
-
-    // Queue for BFS
-    int queue[MAX_VERTICES];
-    int front = -1, rear = -1;
-
-    // Start by marking the start vertex as visited
-    visited[start] = true;
-    queue[++rear] = start;  // Enqueue the start vertex
-
-    printf("BFS Traversal starting from vertex %d: ", start);
-
-    while (front != rear) {
-        // Dequeue a vertex from the queue
-        int currentVertex = queue[++front];
-
-        // Print the dequeued vertex
-        printf("%d ", currentVertex);
-
-        // Explore all the neighbors of the dequeued vertex
-        for (int i = 0; i < vertices; i++) {
-            // If there's an edge and the vertex is not visited
-            if (graph[currentVertex][i] != 0 && !visited[i]) {
-                visited[i] = true;      // Mark the vertex as visited
-                queue[++rear] = i;      // Enqueue the vertex
-            }
-        }
-    }
-    printf("\n");
 }
-
-// Function to create the graph using an adjacency matrix
-void createGraph(int graph[MAX_VERTICES][MAX_VERTICES], int vertices) {
-    int u, v;
-    printf("Enter the edges of the graph (u, v) where u and v are vertex indices (0 to %d):\n", vertices-1);
-    printf("Enter -1 -1 to stop.\n");
-
-    while (1) {
-        printf("Enter edge (u v): ");
-        scanf("%d %d", &u, &v);
-
-        if (u == -1 && v == -1)
-            break;
-
-        if (u >= 0 && u < vertices && v >= 0 && v < vertices) {
-            graph[u][v] = 1; // Directed graph, edge from u to v
-            graph[v][u] = 1; // For undirected graph, add the reverse edge as well
-        } else {
-            printf("Invalid vertices! Please enter valid vertices within the range 0 to %d.\n", vertices-1);
-        }
-    }
+void dfs(int adj[][no_vertices],int visited[], int start)
+{
+	printf("%d\t",start);
+	visited[start] =1;
+	for(int i=0;i<no_vertices;i++)
+	{
+		if(visited[i]!=1 && adj[start][i]==1)
+		{
+			dfs(adj,visited,i);
+		}
+	}	
 }
+void bfs(int adj[][no_vertices], int start)
+{
+	int visited[no_vertices],queue[no_vertices],front=-1,rear=-1;
 
-int main() {
-    int vertices;
-    int graph[MAX_VERTICES][MAX_VERTICES] = {0}; // Initialize the graph as empty (0s)
+	for(int i=0;i<no_vertices;i++)
+		visited[i] =0;
 
-    printf("Enter the number of vertices in the graph: ");
-    scanf("%d", &vertices);
+	front++;
+	queue[++rear] = start;
+	visited[start] = 1;
 
-    if (vertices > MAX_VERTICES) {
-        printf("Exceeded maximum number of vertices!\n");
-        return -1;
-    }
+	while(front<=rear)
+	{
+		start = queue[front++];
+		printf("%d\t",start);
 
-    // Create the graph
-    createGraph(graph, vertices);
+		for(int i=0;i<no_vertices;i++)
+		{
+			if(adj[start][i]==1 && visited[i] != 1)
+			{
+				queue[++rear] = i;
+				visited[i] =1;
+			}
+		}
 
-    int startVertex;
-    printf("Enter the starting vertex for BFS: ");
-    scanf("%d", &startVertex);
 
-    // Perform BFS traversal from the start vertex
-    BFS(graph, vertices, startVertex);
+	}
 
-    return 0;
+}
+int main()
+{	
+	int s,d,ch,start;
+	printf("\nEnter the number of vertices : ");
+	scanf("%d",&no_vertices);
+	int adj[no_vertices][no_vertices],visited[no_vertices];
+	
+
+	for(int i =0;i<no_vertices;i++)
+		for(int j=0;j<no_vertices;j++)
+			adj[i][j] =0;
+
+	while(s!=-1 && d!=-1)
+	{
+	printf("Enter an Edge fromnode(0 to %d) to node(0 to %d) : ",no_vertices,no_vertices);
+	scanf("%d%d",&s,&d);
+	adj[s][d] = 1;
+	adj[d][s] = 1;
+	}
+
+	do
+	{
+		printf("\nEnter 1 for BFS\nEnter 2 for DFS\nEnter 3 for printing adjacency matrix\nEnter 4 to Exit : ");
+		scanf("%d",&ch);
+		switch(ch)
+		{
+			case 1:
+				printf("Enter the Vertex fron which do you wanted to start : ");
+				scanf("%d",&start);
+				bfs(adj,start);break;
+			case 2:
+				printf("Enter the Vertex fron which do you wanted to start : ");
+				scanf("%d",&start);
+				for(int i =0;i<no_vertices;i++)
+					visited[i] = 0;
+				dfs(adj,visited, start);break;
+
+			break;
+			case 3:printGraph(adj);break;
+			case 4: break;
+		}
+
+	}while(ch != 4);
+
+	return 0;
 }
